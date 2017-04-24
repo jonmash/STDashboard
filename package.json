@@ -1,0 +1,17 @@
+{
+  "name": "smartthingshomedashboard",
+  "version": "1.0.0",
+  "description": "Not yet...",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jonathan Mash",
+  "license": "MIT",
+  "dependencies": {
+    "JSON": "^1.0.0",
+    "express": "^4.15.2",
+    "oauth": "^0.9.15",
+    "request": "^2.81.0"
+  }
+}
