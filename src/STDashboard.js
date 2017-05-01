@@ -4,6 +4,25 @@ var express = require('express');
 var OAuth = require('oauth'), OAuth2 = OAuth.OAuth2;
 
 app = express();
+app.set('view engine', 'pug')
+app.use('/static', express.static('inc'))
+app.use('/fonts', express.static('inc/fonts'))
+
+var colourScheme =  ["#ce6231",
+                    "#6b48c9",
+                    "#59b949",
+                    "#ce51cb",
+                    "#9bab48",
+                    "#83387b",
+                    "#c6943b",
+                    "#4c4880",
+                    "#d33845",
+                    "#5cad97",
+                    "#d26395",
+                    "#4c6330",
+                    "#8595cf",
+                    "#783630",
+                    "#cb8e7b"]
 
 if(!("bearer" in config.oauth) || config.oauth.bearer === "") {
     var endpoints_uri = config.oauth.serverSite + '/api/smartapps/endpoints';
@@ -77,12 +96,12 @@ if(!("bearer" in config.oauth) || config.oauth.bearer === "") {
             headers: { Authorization: 'Bearer '+ config.oauth.bearer }
         };
         request(request_options, function (err, res1, body) {
-            //var parsedBody = JSON.parse(body);
-            res.send('<pre>' + body + '</pre>');
+            var parsedBody = JSON.parse(body);
+            res.render('index', {devices: parsedBody, colours: colourScheme});
         });
     });
     app.get('/:id/:cmd', function (req, res) {
-        if(['on', 'off'].indexOf(req.params.cmd) < 0) {
+        if(['on', 'off', 'toggle'].indexOf(req.params.cmd) < 0) {
             res.status(400)
                .send('Invalid Command: ' + req.params.cmd);
             return;

@@ -1,0 +1,97 @@
+
+doctype html
+html(lang="en")
+    head
+        title= STDashboard
+        link(rel='stylesheet', href='static/bootstrap.min.css')
+        link(rel='stylesheet', href='static/style.css')
+        link(rel='stylesheet', href='static/font-awesome.min.css')
+        script(src='static/jquery-3.2.1.min.js')
+        script(src='static/bootstrap.min.js')
+        script(type='text/javascript').
+            function getDeviceIdxById(data, id) {
+                return data.findIndex(function (element) {
+                    return element.id == id;
+                });
+            }
+            function syntaxHighlight(json) {
+                if (typeof json != 'string') {
+                     json = JSON.stringify(json, undefined, 2);
+                }
+                json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                    var cls = 'number';
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'key';
+                        } else {
+                            cls = 'string';
+                        }
+                    } else if (/true|false/.test(match)) {
+                        cls = 'boolean';
+                    } else if (/null/.test(match)) {
+                        cls = 'null';
+                    }
+                    return '<span class="' + cls + '">' + match + '</span>';
+                });
+            }
+            $( document ).ready(function() {
+                // Client side device list
+                var devices = !{JSON.stringify(devices)};
+                $("#debugOutput").html(syntaxHighlight(devices));
+                $(".btnCard").click(function(e) {
+                    e.preventDefault();
+                    
+                    var card = $(this);
+                    var id = card.data("id");
+                    var deviceIdx = getDeviceIdxById(devices, id);
+                    
+                    card.find( ".status" ).html( '<i class="fa fa-refresh fa-spin fa-fw" aria-hidden="true"></i><span class="sr-only">Loading...</span>' );
+                    
+                    $.ajax( "/" + id + "/toggle" )
+                        .done(function() {
+                            // Device WAS on
+                            if(devices[deviceIdx].value == "on") {
+                                devices[deviceIdx].value = "off";
+                                card.find( ".toggleBtn" ).html("ON");
+                                card.find("i.fa").removeClass("light-on");
+                            } else { // Device WAS off
+                                devices[deviceIdx].value = "on";
+                                card.find( ".toggleBtn" ).html("OFF");
+                                card.find("i.fa").addClass("light-on");
+                            }
+                            card.find( ".status" ).html( '<i class="fa fa-exclamation-triangle fa-fw" style="color: green" aria-hidden="true"></i><span class="sr-only">Success...</span>' );
+                        })
+                        .fail(function() {
+                            card.find( ".status" ).html( '<i class="fa fa-check-circle fa-fw" style="color: red" aria-hidden="true"></i><span class="sr-only">Failed!</span>' );
+                        })
+                        .always(function() {
+                            $("#debugOutput").html(syntaxHighlight(devices));
+                        })
+ 
+                    return false;
+                });
+            });
+        
+    body
+        div(class="container m-t-md")
+            div(class="row")
+                div(class="col-xs-12")
+                    h1 HomeDashboard
+            div(class="row")
+                each device, idx in devices
+                    div(class="col-xs-12 col-md-4 card-deck my-2")
+                        div(class="card btnCard card-inverse" style="text-align:center; background-color: " + colours[idx%colours.length] + "; border-color: #333;" data-id=device.id)
+                            div(class="card-header")
+                                i(class=(((device.value == "on")?"light-on":"")+" fa fa-lightbulb-o fa-5x") aria-hidden="true")
+                            div(class="card-block")
+                                h4(class="card-title")= device.name
+                            div(class="card-footer")
+                                a(href="#" class="btn btn-secondary toggleBtn")= ((device.value == "on")?"OFF":"ON")
+                                span(class="status") &nbsp;
+
+            div(class="row")
+                div(class="col-md-3") &nbsp;
+                div(class="col-md-6")
+                    pre(id="debugOutput")
+                div(class="col-md-3") &nbsp;

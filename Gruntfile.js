@@ -20,10 +20,6 @@ module.exports = function(grunt) {
           jQuery: true
         }
       }
-    },
-    watch: {
-      files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'] ,
-      tasks: ['jshint']
     }
   });
 
@@ -33,7 +29,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Default task(s).
-  grunt.registerTask('default', ['jshint']);
-  grunt.registerTask('uglify', ['uglify']);
-
+  grunt.registerTask('default', ['jshint','uglify']);
 };
