@@ -4,9 +4,9 @@ var express = require('express');
 var OAuth = require('oauth'), OAuth2 = OAuth.OAuth2;
 
 app = express();
-app.set('view engine', 'pug')
-app.use('/static', express.static('inc'))
-app.use('/fonts', express.static('inc/fonts'))
+app.set('view engine', 'pug');
+app.use('/static', express.static('inc'));
+app.use('/fonts', express.static('inc/fonts'));
 
 var colourScheme =  ["#ce6231",
                     "#6b48c9",
@@ -22,7 +22,7 @@ var colourScheme =  ["#ce6231",
                     "#4c6330",
                     "#8595cf",
                     "#783630",
-                    "#cb8e7b"]
+                    "#cb8e7b"];
 
 if(!("bearer" in config.oauth) || config.oauth.bearer === "") {
     var endpoints_uri = config.oauth.serverSite + '/api/smartapps/endpoints';
